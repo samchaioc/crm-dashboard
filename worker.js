@@ -193,7 +193,7 @@ const INDEX_HTML = `<!DOCTYPE html>
   <script>
     const CONFIG = {
       // CRM GAS URL - 請替換成你的 GAS Web App URL
-      CRM_GAS_URL: 'https://script.google.com/macros/s/AKfycbzoSGH19_O1Lcfp5OOmQhgHJWd6i6IT43k_TV7GuLA9at0XPLxA-bPYtlOGv4ukE5KN/exec',
+      CRM_GAS_URL: 'https://script.google.com/macros/s/AKfycbyLLhB0QNlFDgVTChtM_NBi10dGKlm7XYl4-7lMWSv7wYfAJNJCUZhh0YnXu-DPs3lQ5g/exec',
       API_KEY: 'a8K3mP9vQ2wR5tY7'
     };
 
