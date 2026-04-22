@@ -62,8 +62,13 @@ async function handleGasProxy(url) {
 async function serveStatic(path) {
   if (path === '/' || path === '/index.html') {
     return new Response(INDEX_HTML, {
-      headers: { 'Content-Type': 'text/html' }
+      headers: { 'Content-Type': 'text/html; charset=utf-8' }
     });
+  }
+  
+  // Favicon - return empty
+  if (path === '/favicon.ico') {
+    return new Response('', { status: 204 });
   }
   
   return new Response('Not Found', { status: 404 });
