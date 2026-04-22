@@ -1,20 +1,22 @@
 // Cloudflare Worker - CRM Dashboard
 // 靜態文件 + Google Apps Script API 代理
 
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-    const path = url.pathname;
-    
-    // API 路由: /api/gas - 代理 GAS 請求
-    if (path === '/api/gas') {
-      return handleGasProxy(url);
-    }
-    
-    // 靜態文件
-    return serveStatic(path);
+addEventListener("fetch", event => {
+  event.respondWith(handleRequest(event.request));
+});
+
+async function handleRequest(request) {
+  const url = new URL(request.url);
+  const path = url.pathname;
+  
+  // API 路由: /api/gas - 代理 GAS 請求
+  if (path === '/api/gas') {
+    return handleGasProxy(url);
   }
-};
+  
+  // 靜態文件
+  return serveStatic(path);
+}
 
 // 處理 GAS API 請求（解決 CORS 問題）
 async function handleGasProxy(url) {
@@ -68,7 +70,7 @@ async function serveStatic(path) {
 }
 
 // CRM Dashboard HTML
-const INDEX_HTML = \`<!DOCTYPE html>
+const INDEX_HTML = `<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
@@ -267,4 +269,4 @@ const INDEX_HTML = \`<!DOCTYPE html>
     });
   </script>
 </body>
-</html>\`;
+</html>`;
