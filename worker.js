@@ -274,12 +274,20 @@ const INDEX_HTML = `<!DOCTYPE html>
           <div class="kpi-value" id="crm-new">-</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-header"><div class="kpi-title">ANP (年化保费)</div></div>
-          <div class="kpi-value" id="crm-anp">-</div>
+          <div class="kpi-header"><div class="kpi-title">YTD ANP</div></div>
+          <div class="kpi-value" id="crm-ytd-anp">-</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-header"><div class="kpi-title">AFYC (第一年佣金)</div></div>
-          <div class="kpi-value" id="crm-afyc">-</div>
+          <div class="kpi-header"><div class="kpi-title">MTD ANP</div></div>
+          <div class="kpi-value" id="crm-mtd-anp">-</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-title">YTD AFYC</div></div>
+          <div class="kpi-value" id="crm-ytd-afyc">-</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-title">MTD AFYC</div></div>
+          <div class="kpi-value" id="crm-mtd-afyc">-</div>
         </div>
       </div>
 
@@ -360,8 +368,10 @@ const INDEX_HTML = `<!DOCTYPE html>
           document.getElementById('crm-clients').innerHTML = formatNumber(stats.totalClients) + '<span class="kpi-unit"> 人</span>';
           document.getElementById('crm-premium').innerHTML = 'RM ' + formatNumber(stats.totalPremium);
           document.getElementById('crm-new').innerHTML = formatNumber(stats.newThisMonth) + '<span class="kpi-unit"> 張</span>';
-          document.getElementById('crm-anp').innerHTML = 'RM ' + formatNumber(Math.round(stats.totalANP || 0));
-          document.getElementById('crm-afyc').innerHTML = 'RM ' + formatNumber(Math.round(stats.totalAFYC || 0));
+          document.getElementById('crm-ytd-anp').innerHTML = 'RM ' + formatNumber(Math.round(stats.ytdANP || 0));
+          document.getElementById('crm-mtd-anp').innerHTML = 'RM ' + formatNumber(Math.round(stats.mtdANP || 0));
+          document.getElementById('crm-ytd-afyc').innerHTML = 'RM ' + formatNumber(Math.round(stats.ytdAFYC || 0));
+          document.getElementById('crm-mtd-afyc').innerHTML = 'RM ' + formatNumber(Math.round(stats.mtdAFYC || 0));
         }
 
         // 2️⃣ 抓最近保單記錄
