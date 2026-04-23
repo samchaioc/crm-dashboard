@@ -323,13 +323,15 @@ const INDEX_HTML = `<!DOCTYPE html>
       const annualPremium = Number(premium);
       let afycPercent = 0;
       
+      const paymentTermStr = String(paymentTerm);
+      
       if (policyType === 'ILP') {
         // Investment linked product
-        if (paymentTerm === '5') {
+        if (paymentTermStr === '5') {
           afycPercent = 25 / 2 / 2; // 6.25%
-        } else if (paymentTerm === '10') {
+        } else if (paymentTermStr === '10') {
           afycPercent = 25 / 2; // 12.5%
-        } else if (paymentTerm === '20') {
+        } else if (paymentTermStr === '20') {
           afycPercent = 25; // 25%
         } else {
           // 如果是其他年期，默认给 12.5%
