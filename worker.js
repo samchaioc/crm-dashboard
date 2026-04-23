@@ -72,6 +72,7 @@ async function handleAddCustomer(request) {
     
     // 構建 GAS 需要的數據格式
     const data = {
+      key: 'a8K3mP9vQ2wR5tY7',
       clientName: formData.clientName,
       clientIC: formData.clientIC,
       ic_number: formData.clientIC,
