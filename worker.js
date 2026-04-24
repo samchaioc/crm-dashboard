@@ -65,7 +65,7 @@ async function handleGasProxy(url) {
 
 // 處理添加客戶請求
 async function handleAddCustomer(request) {
-  const gasUrl = 'https://script.google.com/macros/s/AKfycbw0jDXNkh_fB3U74PyoBAQd2fB87TqjV1nrjgXXHwhJDTFpnTF4MxSydgPC06zNeuQGJQ/exec';
+  const gasUrl = 'https://script.google.com/macros/s/AKfycbzyrzVJlOhzVRL8NCO7PA55weafmqBFx96lo9Nl4WRQJokprcnowDKkuecJudXYSUPyQA/exec';
   
   try {
     const formData = await request.json();
@@ -327,7 +327,7 @@ const INDEX_HTML = `<!DOCTYPE html>
   <script>
     const CONFIG = {
       // CRM GAS URL - 請替換成你的 GAS Web App URL
-      CRM_GAS_URL: 'https://script.google.com/macros/s/AKfycbw0jDXNkh_fB3U74PyoBAQd2fB87TqjV1nrjgXXHwhJDTFpnTF4MxSydgPC06zNeuQGJQ/exec',
+      CRM_GAS_URL: 'https://script.google.com/macros/s/AKfycbzyrzVJlOhzVRL8NCO7PA55weafmqBFx96lo9Nl4WRQJokprcnowDKkuecJudXYSUPyQA/exec',
       API_KEY: 'a8K3mP9vQ2wR5tY7'
     };
 
@@ -915,7 +915,7 @@ const ADD_CUSTOMER_HTML = `<!DOCTYPE html>
 
   <script>
     const CONFIG = {
-      CRM_GAS_URL: 'https://script.google.com/macros/s/AKfycbw0jDXNkh_fB3U74PyoBAQd2fB87TqjV1nrjgXXHwhJDTFpnTF4MxSydgPC06zNeuQGJQ/exec',
+      CRM_GAS_URL: 'https://script.google.com/macros/s/AKfycbzyrzVJlOhzVRL8NCO7PA55weafmqBFx96lo9Nl4WRQJokprcnowDKkuecJudXYSUPyQA/exec',
       API_KEY: 'a8K3mP9vQ2wR5tY7'
     };
     

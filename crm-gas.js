@@ -134,8 +134,8 @@ function savePolicyToCRM(data) {
     data.insuranceCompany || '',        // InsuranceCompany
     data.policyType || '',              // PolicyType
     data.commencementDate || '',        // CommencementDate (有效日期)
-    data.paymentMode || '',             // PaymentMode
     data.paymentTerm || '',             // PaymentTerm
+    data.paymentMode || '',             // PaymentMode
     data.paymentFrequency || '',        // PaymentFrequency
     data.monthlyPremium || '',          // MonthlyPremium
     data.annualPremium || '',           // AnnualPremium
