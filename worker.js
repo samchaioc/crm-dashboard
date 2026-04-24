@@ -65,14 +65,13 @@ async function handleGasProxy(url) {
 
 // 處理添加客戶請求
 async function handleAddCustomer(request) {
-  const gasUrl = 'https://script.google.com/macros/s/AKfycby8OhN2J-MwBUoGySUN1uiLVMTKEvmlz54-qKimLpV2C3shhx7CE332_UjhSsPMs4A9Bw/exec';
+  const gasUrl = 'https://script.google.com/macros/s/AKfycbw0jDXNkh_fB3U74PyoBAQd2fB87TqjV1nrjgXXHwhJDTFpnTF4MxSydgPC06zNeuQGJQ/exec';
   
   try {
     const formData = await request.json();
     
     // 構建 GAS 需要的數據格式
     const data = {
-      key: 'a8K3mP9vQ2wR5tY7',
       clientName: formData.clientName,
       clientIC: formData.clientIC,
       ic_number: formData.clientIC,
@@ -115,7 +114,8 @@ async function handleAddCustomer(request) {
       nominee: formData.nominee || '',
       vitalityCover: formData.vitalityCover || '',
       sustainabilityAge: formData.sustainabilityAge || '',
-      otherBenefits: formData.otherBenefits || ''
+      otherBenefits: formData.otherBenefits || '',
+      key: 'a8K3mP9vQ2wR5tY7'
     };
     
     const response = await fetch(gasUrl, {
@@ -290,6 +290,22 @@ const INDEX_HTML = `<!DOCTYPE html>
           <div class="kpi-header"><div class="kpi-title">MTD AFYC</div></div>
           <div class="kpi-value" id="crm-mtd-afyc">-</div>
         </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-title">月繳 (Monthly)</div></div>
+          <div class="kpi-value" id="crm-monthly">-</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-title">年繳 (Yearly)</div></div>
+          <div class="kpi-value" id="crm-yearly">-</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-title">季繳 (Quarterly)</div></div>
+          <div class="kpi-value" id="crm-quarterly">-</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-header"><div class="kpi-title">半年繳 (Half Yearly)</div></div>
+          <div class="kpi-value" id="crm-halfyearly">-</div>
+        </div>
       </div>
 
       <div class="card">
@@ -309,7 +325,7 @@ const INDEX_HTML = `<!DOCTYPE html>
   <script>
     const CONFIG = {
       // CRM GAS URL - 請替換成你的 GAS Web App URL
-      CRM_GAS_URL: 'https://script.google.com/macros/s/AKfycby8OhN2J-MwBUoGySUN1uiLVMTKEvmlz54-qKimLpV2C3shhx7CE332_UjhSsPMs4A9Bw/exec',
+      CRM_GAS_URL: 'https://script.google.com/macros/s/AKfycbw0jDXNkh_fB3U74PyoBAQd2fB87TqjV1nrjgXXHwhJDTFpnTF4MxSydgPC06zNeuQGJQ/exec',
       API_KEY: 'a8K3mP9vQ2wR5tY7'
     };
 
@@ -318,24 +334,23 @@ const INDEX_HTML = `<!DOCTYPE html>
       return num.toLocaleString('en-MY');
     }
 
-    function calculateAFYC(policyType, paymentTerm, premium) {
+    function calculateAFYC(policyType, paymentTerm, premium, paymentFrequency) {
       if (!policyType || !premium || premium === 0) return '-';
       
-      const annualPremium = Number(premium);
-      let afycPercent = 0;
+      // premium保持原样（已经是正确的缴款频率对应的金额）
+      const singlePremium = Number(premium);
       
-      const paymentTermStr = String(paymentTerm);
+      let afycPercent = 0;
+      const term = String(paymentTerm);
       
       if (policyType === 'ILP') {
-        // Investment linked product
-        if (paymentTermStr === '5') {
+        if (term === '5') {
           afycPercent = 25 / 2 / 2; // 6.25%
-        } else if (paymentTermStr === '10') {
+        } else if (term === '10') {
           afycPercent = 25 / 2; // 12.5%
-        } else if (paymentTermStr === '20') {
+        } else if (term === '20') {
           afycPercent = 25; // 25%
         } else {
-          // 如果是其他年期，默认给 12.5%
           afycPercent = 12.5;
         }
       } else if (policyType === 'Traditional') {
@@ -346,7 +361,7 @@ const INDEX_HTML = `<!DOCTYPE html>
         return '-';
       }
       
-      const afyc = annualPremium * (afycPercent / 100);
+      const afyc = singlePremium * (afycPercent / 100);
       return 'RM ' + formatNumber(afyc.toFixed(2));
     }
 
@@ -375,6 +390,10 @@ const INDEX_HTML = `<!DOCTYPE html>
           document.getElementById('crm-mtd-anp').innerHTML = 'RM ' + formatNumber(Math.round(stats.mtdANP || 0));
           document.getElementById('crm-ytd-afyc').innerHTML = 'RM ' + formatNumber(Math.round(stats.ytdAFYC || 0));
           document.getElementById('crm-mtd-afyc').innerHTML = 'RM ' + formatNumber(Math.round(stats.mtdAFYC || 0));
+          document.getElementById('crm-monthly').innerHTML = formatNumber(stats.monthlyCount || 0) + '<span class="kpi-unit"> 張</span>';
+          document.getElementById('crm-yearly').innerHTML = formatNumber(stats.yearlyCount || 0) + '<span class="kpi-unit"> 張</span>';
+          document.getElementById('crm-quarterly').innerHTML = formatNumber(stats.quarterlyCount || 0) + '<span class="kpi-unit"> 張</span>';
+          document.getElementById('crm-halfyearly').innerHTML = formatNumber(stats.halfYearlyCount || 0) + '<span class="kpi-unit"> 張</span>';
         }
 
         // 2️⃣ 抓最近保單記錄
@@ -412,7 +431,7 @@ const INDEX_HTML = `<!DOCTYPE html>
               rec.paymentFrequency || '',
               rec.status || '',
               rec.premium ? 'RM ' + formatNumber(rec.premium) : '',
-              calculateAFYC(rec.policyType, rec.paymentTerm, rec.premium)
+              calculateAFYC(rec.policyType, rec.paymentTerm, rec.premium, rec.paymentFrequency)
             ];
             cells.forEach(txt => {
               const td = document.createElement('td');
@@ -828,6 +847,11 @@ const ADD_CUSTOMER_HTML = `<!DOCTYPE html>
   </div>
 
   <script>
+    const CONFIG = {
+      CRM_GAS_URL: 'https://script.google.com/macros/s/AKfycbw0jDXNkh_fB3U74PyoBAQd2fB87TqjV1nrjgXXHwhJDTFpnTF4MxSydgPC06zNeuQGJQ/exec',
+      API_KEY: 'a8K3mP9vQ2wR5tY7'
+    };
+    
     document.getElementById('customer-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -840,7 +864,7 @@ const ADD_CUSTOMER_HTML = `<!DOCTYPE html>
       const data = Object.fromEntries(formData.entries());
       
       // 加入 API Key
-      data.key = 'a8K3mP9vQ2wR5tY7';
+      data.key = CONFIG.API_KEY;
       
       // 顯示載入狀態
       submitBtn.disabled = true;
