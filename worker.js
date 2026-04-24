@@ -455,7 +455,7 @@ const INDEX_HTML = `<!DOCTYPE html>
               select.appendChild(opt);
             });
             
-            select.addEventListener('change', filterTable);
+            select.addEventListener('change', () => renderRows());
             filterTh.appendChild(select);
             filterRow.appendChild(filterTh);
           });
@@ -506,7 +506,6 @@ const INDEX_HTML = `<!DOCTYPE html>
             });
           }
           
-          window.filterTable = renderRows;
           renderRows();
           table.appendChild(tbody);
           
