@@ -1,0 +1,9 @@
+name = "crm-dashboard"
+main = "worker.js"
+compatibility_date = "2023-12-01"
+
+[site]
+bucket = "."
+
+[env.production]
+name = "crm-dashboard"

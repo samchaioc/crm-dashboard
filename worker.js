@@ -65,13 +65,14 @@ async function handleGasProxy(url) {
 
 // 處理添加客戶請求
 async function handleAddCustomer(request) {
-  const gasUrl = 'https://script.google.com/macros/s/AKfycby1lXBRdBQflSPoUwJRl-LzJhNte92NBNfttU4RlSftBe_nMUpslCuhRcsc2yMWikIagg/exec';
+  const gasUrl = 'https://script.google.com/macros/s/AKfycby8OhN2J-MwBUoGySUN1uiLVMTKEvmlz54-qKimLpV2C3shhx7CE332_UjhSsPMs4A9Bw/exec';
   
   try {
     const formData = await request.json();
     
     // 構建 GAS 需要的數據格式
     const data = {
+      key: 'a8K3mP9vQ2wR5tY7',
       clientName: formData.clientName,
       clientIC: formData.clientIC,
       ic_number: formData.clientIC,
@@ -274,28 +275,20 @@ const INDEX_HTML = `<!DOCTYPE html>
           <div class="kpi-value" id="crm-new">-</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-header"><div class="kpi-title">ANP (年化保费)</div></div>
-          <div class="kpi-value" id="crm-anp">-</div>
+          <div class="kpi-header"><div class="kpi-title">YTD ANP</div></div>
+          <div class="kpi-value" id="crm-ytd-anp">-</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-header"><div class="kpi-title">AFYC (第一年佣金)</div></div>
-          <div class="kpi-value" id="crm-afyc">-</div>
+          <div class="kpi-header"><div class="kpi-title">MTD ANP</div></div>
+          <div class="kpi-value" id="crm-mtd-anp">-</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-header"><div class="kpi-title">月繳 (Monthly)</div></div>
-          <div class="kpi-value" id="crm-monthly">-</div>
+          <div class="kpi-header"><div class="kpi-title">YTD AFYC</div></div>
+          <div class="kpi-value" id="crm-ytd-afyc">-</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-header"><div class="kpi-title">年繳 (Yearly)</div></div>
-          <div class="kpi-value" id="crm-yearly">-</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-header"><div class="kpi-title">季繳 (Quarterly)</div></div>
-          <div class="kpi-value" id="crm-quarterly">-</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-header"><div class="kpi-title">半年繳 (Half Yearly)</div></div>
-          <div class="kpi-value" id="crm-halfyearly">-</div>
+          <div class="kpi-header"><div class="kpi-title">MTD AFYC</div></div>
+          <div class="kpi-value" id="crm-mtd-afyc">-</div>
         </div>
       </div>
 
@@ -316,7 +309,7 @@ const INDEX_HTML = `<!DOCTYPE html>
   <script>
     const CONFIG = {
       // CRM GAS URL - 請替換成你的 GAS Web App URL
-      CRM_GAS_URL: 'https://script.google.com/macros/s/AKfycby1lXBRdBQflSPoUwJRl-LzJhNte92NBNfttU4RlSftBe_nMUpslCuhRcsc2yMWikIagg/exec',
+      CRM_GAS_URL: 'https://script.google.com/macros/s/AKfycby8OhN2J-MwBUoGySUN1uiLVMTKEvmlz54-qKimLpV2C3shhx7CE332_UjhSsPMs4A9Bw/exec',
       API_KEY: 'a8K3mP9vQ2wR5tY7'
     };
 
@@ -331,13 +324,15 @@ const INDEX_HTML = `<!DOCTYPE html>
       const annualPremium = Number(premium);
       let afycPercent = 0;
       
+      const paymentTermStr = String(paymentTerm);
+      
       if (policyType === 'ILP') {
         // Investment linked product
-        if (paymentTerm === '5') {
+        if (paymentTermStr === '5') {
           afycPercent = 25 / 2 / 2; // 6.25%
-        } else if (paymentTerm === '10') {
+        } else if (paymentTermStr === '10') {
           afycPercent = 25 / 2; // 12.5%
-        } else if (paymentTerm === '20') {
+        } else if (paymentTermStr === '20') {
           afycPercent = 25; // 25%
         } else {
           // 如果是其他年期，默认给 12.5%
@@ -376,12 +371,10 @@ const INDEX_HTML = `<!DOCTYPE html>
           document.getElementById('crm-clients').innerHTML = formatNumber(stats.totalClients) + '<span class="kpi-unit"> 人</span>';
           document.getElementById('crm-premium').innerHTML = 'RM ' + formatNumber(stats.totalPremium);
           document.getElementById('crm-new').innerHTML = formatNumber(stats.newThisMonth) + '<span class="kpi-unit"> 張</span>';
-          document.getElementById('crm-anp').innerHTML = 'RM ' + formatNumber(Math.round(stats.ytdANP || 0));
-          document.getElementById('crm-afyc').innerHTML = 'RM ' + formatNumber(Math.round(stats.ytdAFYC || 0));
-          document.getElementById('crm-monthly').innerHTML = formatNumber(stats.monthlyCount || 0) + '<span class="kpi-unit"> 張</span>';
-          document.getElementById('crm-yearly').innerHTML = formatNumber(stats.yearlyCount || 0) + '<span class="kpi-unit"> 張</span>';
-          document.getElementById('crm-quarterly').innerHTML = formatNumber(stats.quarterlyCount || 0) + '<span class="kpi-unit"> 張</span>';
-          document.getElementById('crm-halfyearly').innerHTML = formatNumber(stats.halfYearlyCount || 0) + '<span class="kpi-unit"> 張</span>';
+          document.getElementById('crm-ytd-anp').innerHTML = 'RM ' + formatNumber(Math.round(stats.ytdANP || 0));
+          document.getElementById('crm-mtd-anp').innerHTML = 'RM ' + formatNumber(Math.round(stats.mtdANP || 0));
+          document.getElementById('crm-ytd-afyc').innerHTML = 'RM ' + formatNumber(Math.round(stats.ytdAFYC || 0));
+          document.getElementById('crm-mtd-afyc').innerHTML = 'RM ' + formatNumber(Math.round(stats.mtdAFYC || 0));
         }
 
         // 2️⃣ 抓最近保單記錄
@@ -847,7 +840,7 @@ const ADD_CUSTOMER_HTML = `<!DOCTYPE html>
       const data = Object.fromEntries(formData.entries());
       
       // 加入 API Key
-      data.key = CONFIG.API_KEY;
+      data.key = 'a8K3mP9vQ2wR5tY7';
       
       // 顯示載入狀態
       submitBtn.disabled = true;
