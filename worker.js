@@ -223,6 +223,8 @@ const INDEX_HTML = `<!DOCTYPE html>
     th, td {border: 1px solid var(--border-color); padding: 10px; text-align: left;}
     th {background: #f9fafb; font-weight: 600;}
     tr:hover {background: #f9fafb;}
+    .filter-row th {background: #e5e7eb; padding: 4px;}
+    .column-filter {width: 100%; padding: 4px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px;}
     @media (max-width: 1024px) {.kpi-grid {grid-template-columns: repeat(2, 1fr);}}
     @media (max-width: 768px) {
       .sidebar {width: 100%; position: relative; height: auto;}
@@ -404,42 +406,108 @@ const INDEX_HTML = `<!DOCTYPE html>
         const container = document.getElementById('crm-table-container');
         
         if (recData.success && Array.isArray(recData.records) && recData.records.length) {
+          const allRecords = recData.records;
+          
           // 建立表格
           const table = document.createElement('table');
+          table.id = 'crm-table';
           
-          // 表頭
+          // 表頭 - 带筛选
           const thead = document.createElement('thead');
           const headerRow = document.createElement('tr');
-          ['有效日期', '客戶', '保單號', '產品類型', '繳費年期', '繳費頻率', '狀態', '保費', 'AFYC'].forEach(txt => {
+          const filterRow = document.createElement('tr');
+          filterRow.className = 'filter-row';
+          
+          const columns = [
+            { key: 'commencementDate', label: '有效日期' },
+            { key: 'clientName', label: '客戶' },
+            { key: 'policyNumber', label: '保單號' },
+            { key: 'policyType', label: '產品類型' },
+            { key: 'paymentTerm', label: '繳費年期', suffix: ' 年' },
+            { key: 'paymentFrequency', label: '繳費頻率' },
+            { key: 'status', label: '狀態' },
+            { key: 'premium', label: '保費', prefix: 'RM ' },
+            { key: 'afyc', label: 'AFYC', isCalc: true }
+          ];
+          
+          columns.forEach(col => {
             const th = document.createElement('th');
-            th.textContent = txt;
+            th.textContent = col.label;
             headerRow.appendChild(th);
+            
+            const filterTh = document.createElement('th');
+            const select = document.createElement('select');
+            select.className = 'column-filter';
+            select.dataset.column = col.key;
+            select.innerHTML = '<option value="">全部</option>';
+            
+            // 收集该列所有唯一值
+            const uniqueValues = new Set();
+            allRecords.forEach(rec => {
+              let val = col.isCalc ? calculateAFYC(rec.policyType, rec.paymentTerm, rec.premium, rec.paymentFrequency) : rec[col.key];
+              if (col.suffix && val) val = val + col.suffix;
+              if (val) uniqueValues.add(val);
+            });
+            Array.from(uniqueValues).sort().forEach(val => {
+              const opt = document.createElement('option');
+              opt.value = val;
+              opt.textContent = val;
+              select.appendChild(opt);
+            });
+            
+            select.addEventListener('change', filterTable);
+            filterTh.appendChild(select);
+            filterRow.appendChild(filterTh);
           });
+          
           thead.appendChild(headerRow);
+          thead.appendChild(filterRow);
           table.appendChild(thead);
           
           // 表身
           const tbody = document.createElement('tbody');
-          recData.records.forEach(rec => {
-            const tr = document.createElement('tr');
-            const cells = [
-              formatDate(rec.commencementDate) || '',
-              rec.clientName || '',
-              rec.policyNumber || '',
-              rec.policyType || '',
-              rec.paymentTerm ? rec.paymentTerm + ' 年' : '',
-              rec.paymentFrequency || '',
-              rec.status || '',
-              rec.premium ? 'RM ' + formatNumber(rec.premium) : '',
-              calculateAFYC(rec.policyType, rec.paymentTerm, rec.premium, rec.paymentFrequency)
-            ];
-            cells.forEach(txt => {
-              const td = document.createElement('td');
-              td.textContent = txt;
-              tr.appendChild(td);
+          function renderRows() {
+            tbody.innerHTML = '';
+            const filters = document.querySelectorAll('.column-filter');
+            const filterValues = {};
+            filters.forEach(f => filterValues[f.dataset.column] = f.value);
+            
+            allRecords.forEach(rec => {
+              let show = true;
+              columns.forEach(col => {
+                const filterVal = filterValues[col.key];
+                if (filterVal) {
+                  let cellVal = col.isCalc ? calculateAFYC(rec.policyType, rec.paymentTerm, rec.premium, rec.paymentFrequency) : rec[col.key];
+                  if (col.suffix && cellVal) cellVal = cellVal + col.suffix;
+                  if (cellVal !== filterVal) show = false;
+                }
+              });
+              
+              if (show) {
+                const tr = document.createElement('tr');
+                const cells = [
+                  formatDate(rec.commencementDate) || '',
+                  rec.clientName || '',
+                  rec.policyNumber || '',
+                  rec.policyType || '',
+                  rec.paymentTerm ? rec.paymentTerm + ' 年' : '',
+                  rec.paymentFrequency || '',
+                  rec.status || '',
+                  rec.premium ? 'RM ' + formatNumber(rec.premium) : '',
+                  calculateAFYC(rec.policyType, rec.paymentTerm, rec.premium, rec.paymentFrequency)
+                ];
+                cells.forEach(txt => {
+                  const td = document.createElement('td');
+                  td.textContent = txt;
+                  tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+              }
             });
-            tbody.appendChild(tr);
-          });
+          }
+          
+          window.filterTable = renderRows;
+          renderRows();
           table.appendChild(tbody);
           
           container.innerHTML = '';
